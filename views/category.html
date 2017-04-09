@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {{template "header"}}
+</head>
+<body>
+{{template "navbar" .}}
+
+    <div class="container" >
+        <form class="form-inline" method="get" action="/categories">
+            <div class="form-group">
+                <label for="category" >分类</label>
+                <div class="form-control">
+                    <input type="hidden" name="op" value="add">
+                    <input name="category" class="form-control" id="category" placeholder="请输入分类名称">
+                </div>
+            </div>
+            <button  type="submit" class="btn btn-default" onclick="  isLogin()">添加</button>
+        </form>
+
+    </div>
+    <div class="container">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>分类名称</th>
+                    <th>文章数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Categories}}
+                    <tr>
+                        <th>{{.Id}}</th>
+                        <th>{{.Title}}</th>
+                        <th>{{.TopicCount}}</th>
+                        <th><a href="/categories?op=del&&id={{.Id}}">删除 </a> </th>
+                    </tr>
+                {{end}}
+            </tbody>
+        </table>
+
+    </div>
+    </div>
+
+<script type="text/javascript">
+    function isLogin() {
+        var login = {{.IsLogin}}
+        if (login) {
+            return true
+        } else {
+            alert("请先登录")
+            return false
+        }
+    }
+</script>
+</body>
+</html>

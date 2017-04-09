@@ -1,30 +1,23 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>我的博客</title>
-    <link rel="shot icon" href="../static/img/avatar.jpg">
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    {{template "header"}}
+
 </head>
 <body>
-    <div class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="/">我的博客</a>
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="/">首页</a> </li>
-                <li><a href="/category">分类</a></li>
-                <li ><a href="/topic">文章</a> </li>
-            </ul>
-        </div>
-    </div>
-    <div class="container">
+
+{{template "navbar" .}}
+
+    <div class="container " >
+        {{range .Topics}}
         <div class="page-header">
-            <h1>第一篇文章</h1>
-            <h6 class="text-muted">创建于猴年马月不知道多少号</h6>
+            <h1><a href="/topic/view/{{.Id}}">{{.Title}}</a></h1>
+            <h6 class="text-muted">最后修改时间{{.Updated}},访问量{{.Views}}</h6>
         </div>
-    <p>天之道，损有余而补不足，是故虚胜实不足胜有余。其意博，其理奥，其趣深。天地之象分，阴阳之候列，变化之由表，死生之昭彰，不谋而遗迹自同，勿约而幽明
-    斯契，稽其言有微，验之事不忒，诚可谓至道之宗，奉生之始矣！</p>
+        {{end}}
     </div>
+    </script>
     <script type="text/javascript" href="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" href="/static/js/bootstrap.min.js"></script>
 </body>

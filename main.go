@@ -2,10 +2,12 @@ package main
 
 import (
 	_ "myblog/routers"
-	"github.com/astaxie/beego"
-	"myblog/models"
-	"github.com/astaxie/beego/orm"
 	"myblog/controllers"
+	"myblog/models"
+
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+
 )
 
 func init()  {
@@ -15,7 +17,11 @@ func init()  {
 func main() {
 	orm.Debug = true
 	orm.RunSyncdb("default", false, true)
-	beego.Router("/",&controllers.MainController{})
+	beego.Router("/",&controllers.HomeController{})
+	beego.Router("/login",&controllers.LoginController{})
+	beego.Router("/categories", &controllers.CategoryController{})
+	beego.Router("/topic", &controllers.TopicController{})
+	beego.AutoRouter(&controllers.TopicController{})   //使用beego的自动路由,如/topic？name=jim相当于/topic/jim
 	beego.Run()
 }
 

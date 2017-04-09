@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {{template "header"}}
+</head>
+<body>
+{{template "navbar" .}}
+
+
+    <div class="container ">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>文章名称</th>
+                    <th>更新时间</th>
+                    <th>分类</th>
+                    <th>访问量</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Topics}}
+                    <tr>
+                        <th>{{.Id}}</th>
+                        <th>{{.Title}}</th>
+                        <th>{{.Updated}}</th>
+                        <th>{{.Category}}</th>
+                        <th>{{.Views}}</th>
+                        <th>
+                            <a href="/topic/modify/{{.Id}}">
+                                <button class="btn btn-default" onclick="return isLogin()"> 修改</button>
+                            </a>
+                            <a href="/topic/delete/{{.Id}}">
+                                <button class="btn btn-default" onclick="return isLogin()">删除</button>
+                            </a>
+                        </th>
+                    </tr>
+                {{end}}
+
+            </tbody>
+        </table>
+
+        <div class="container ">
+            <a href="/topic/add">
+                <button type="button" class="btn btn-default" onclick="return isLogin()">添加文章</button>
+            </a>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        function isLogin() {
+            var login = {{.IsLogin}}
+            if(login){
+                return true
+            }else{
+                alert("请先登录")
+                return false
+            }
+        }
+    </script>
+
+</body>
+</html>

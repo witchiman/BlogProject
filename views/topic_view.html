@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    {{template "header"}}
+
+</head>
+<body>
+
+{{template "navbar" .}}
+
+    <div class="container " >
+        <div class="page-header">
+            <h1>{{.Topic.Title}}</h1>
+            <h6 class="text-muted">最后修改时间{{.Topic.Updated}}，访问量{{.Topic.Views}}</h6>
+        </div>
+        <p>
+            {{.Topic.Content}}
+        </p>
+    </div>
+    <script type="text/javascript" href="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" href="/static/js/bootstrap.min.js"></script>
+</body>
+
+</html>
