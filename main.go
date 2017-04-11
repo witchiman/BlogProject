@@ -20,8 +20,13 @@ func main() {
 	beego.Router("/",&controllers.HomeController{})
 	beego.Router("/login",&controllers.LoginController{})
 	beego.Router("/categories", &controllers.CategoryController{})
+
 	beego.Router("/topic", &controllers.TopicController{})
 	beego.AutoRouter(&controllers.TopicController{})   //使用beego的自动路由,如/topic？name=jim相当于/topic/jim
+
+	beego.Router("/reply/add", &controllers.ReplyController{}, "post:Add")  //添加Reply的Add方法和Delete方法
+	beego.Router("/reply/delete", &controllers.ReplyController{}, "get:Delete")
+
 	beego.Run()
 }
 

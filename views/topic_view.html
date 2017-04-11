@@ -10,13 +10,50 @@
 {{template "navbar" .}}
 
     <div class="container " >
+        {{with .Topic}}
         <div class="page-header">
-            <h1>{{.Topic.Title}}</h1>
-            <h6 class="text-muted">最后修改时间{{.Topic.Updated}}，访问量{{.Topic.Views}}</h6>
+            <h1>{{.Title}}</h1>
+            <h6 class="text-muted">
+                最后修改时间{{.Updated}},访问量{{.Views}},评论数{{.ReplyCount}},最新回复{{.ReplyTime}}
+            </h6>
         </div>
-        <p>
-            {{.Topic.Content}}
+        <p class="lead">
+            {{.Content}}
         </p>
+        {{end}}
+    </div>
+
+    <div class="container">
+        <!--由于遍历时不能再使用‘.’取变量值，需要定义模板变量-->
+        {{$topicId := .Topic.Id}}
+        {{$isLogin := .IsLogin}}
+        {{range .Replies}}
+        <div class="page-header">
+            <h6>昵称: {{.NickName}}, 评论于<small>{{.Ctime}}</small>
+                {{if $isLogin}}
+                <a href="/reply/delete?replyId={{.Id}}&topicId={{$topicId}}">删除</a>
+                {{end}}
+            </h6>
+            <p class="text-justify">
+                {{.Content}}
+            </p>
+        </div>
+        {{end}}
+    </div>
+
+    <div class="container">
+        <form class="form form-horizontal" method="post" action="/reply/add">
+            <div class="form-group">
+                <label for="nickname">昵称</label>
+                <input type="text" id="nickname" name="nickName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="content">评论</label>
+                <textarea id="content"  name="content" cols="30" rows="5" class="form-control"></textarea>
+            </div>
+            <input type="hidden" name="topicId" value="{{.Topic.Id}}">
+            <button class="btn btn-default">提交</button>
+        </form>
     </div>
     <script type="text/javascript" href="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" href="/static/js/bootstrap.min.js"></script>

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge，chrome=1">
     {{template "header"}}
 
 </head>
@@ -10,14 +11,25 @@
 {{template "navbar" .}}
 
     <div class="container " >
-        {{range .Topics}}
-        <div class="page-header">
-            <h1><a href="/topic/view/{{.Id}}">{{.Title}}</a></h1>
-            <h6 class="text-muted">最后修改时间{{.Updated}},访问量{{.Views}}</h6>
+        <div class="col-md-9">
+            {{range .Topics}}
+            <div class="page-header">
+                <h1><a href="/topic/view/{{.Id}}">{{.Title}}</a></h1>
+                <h6 class="text-muted">
+                    最后修改时间{{.Updated}},访问量{{.Views}},评论数{{.ReplyCount}},最新回复{{.ReplyTime}}
+                </h6>
+            </div>
+            {{end}}
         </div>
-        {{end}}
+        <div class="col-md-3">
+            <h3>文章分类</h3>
+            <ul>
+            {{range .Categories}}
+                <li> <a href="/?category={{.Title}}">{{.Title}}</a></li>
+            {{end}}
+            </ul>
+        </div>
     </div>
-    </script>
     <script type="text/javascript" href="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" href="/static/js/bootstrap.min.js"></script>
 </body>
