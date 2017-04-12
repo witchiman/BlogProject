@@ -9,7 +9,7 @@
 <body>
 
     <div class="container ">
-         <form class="form form-horizontal" action="/topic" method="post">
+         <form class="form form-horizontal" action="/topic" method="post" enctype="multipart/form-data">
              {{with .Topic}}
              <div class="form-group">
                  <label for="title">标题</label>
@@ -21,6 +21,10 @@
              </div> <div class="form-group">
                  <label for="label">标签</label>
                  <input id="label" class="form-control" name="label" value="{{.Label}}">
+             </div>
+             <div class="form-group">
+                 <label >文件上传(<a href="/attachment/{{.Attachment}}">{{.Attachment}}</a> )</label>&nbsp;&nbsp;
+                 <input type="file" id="attachment" name="attachment">
              </div>
              <div class="form-control">
                  <label for="content">内容</label>

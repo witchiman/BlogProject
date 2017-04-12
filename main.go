@@ -15,8 +15,10 @@ func init()  {
 }
 
 func main() {
-	orm.Debug = true
-	orm.RunSyncdb("default", false, true)
+	orm.Debug = true //开启ORM调试模式
+	orm.RunSyncdb("default", false, true) //自动建表
+
+	// 注册路由
 	beego.Router("/",&controllers.HomeController{})
 	beego.Router("/login",&controllers.LoginController{})
 	beego.Router("/categories", &controllers.CategoryController{})
@@ -27,6 +29,7 @@ func main() {
 	beego.Router("/reply/add", &controllers.ReplyController{}, "post:Add")  //添加Reply的Add方法和Delete方法
 	beego.Router("/reply/delete", &controllers.ReplyController{}, "get:Delete")
 
+	beego.Router("/attachment/:all", &controllers.AttachmentController{}) //文件下载
 	beego.Run()
 }
 

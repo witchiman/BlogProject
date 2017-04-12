@@ -5,6 +5,7 @@ import (
 	"myblog/models"
 	"fmt"
 	"strings"
+	"path"
 )
 
 type TopicController struct {
@@ -30,12 +31,28 @@ func (c *TopicController) Post()  {
 	topicId := c.Input().Get("topicId")
 	label := c.Input().Get("label")
 
-	var err error
+	//获取文件
+	_, file, err := c.GetFile("attachment")
+	if err != nil {
+		beego.Error(err)
+	}
+	//存储文件
+	var attachment string
+	if file != nil {
+		attachment = file.Filename
+		beego.Info("ADD_MODIFY_TOPIC: ",attachment)
+		beego.Info(path.Join("attachment", attachment))
+		err = c.SaveToFile("attachment", path.Join("attachment", attachment))
+		if err != nil {
+			beego.Error(err)
+		}
+	}
+
 	if len(topicId)!=0 {  //如是参数里含有文章id，说明操作是修改文章
-		err = models.ModifyTopic(topicId, title, content, category, label)
+		err = models.ModifyTopic(topicId, title, content, category, label,attachment)
 		c.Redirect("/topic", 302)
 	}else {
-		err = models.AddTopic(title, content, category, label)
+		err = models.AddTopic(title, content, category, label, attachment)
 		c.Redirect("/topic", 302)
 
 	}

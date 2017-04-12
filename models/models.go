@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"fmt"
 	"strings"
+	"github.com/astaxie/beego"
 )
 
 const (
@@ -124,7 +125,7 @@ func GetCategories() ([]*Category, error) {
 
 
 /*添加文章*/
-func AddTopic(title, content, category, label string)  error {
+func AddTopic(title, content, category, label, attachment string)  error {
 	//标签处理，便于查找，如‘network game’处理后变成‘$network#$game#’
 	realLabel := "$" + strings.Join(strings.Split(label, " "), "#$") + "#"
 
@@ -134,6 +135,7 @@ func AddTopic(title, content, category, label string)  error {
 		Title: title,
 		Category: category,
 		Label: realLabel,
+		Attachment: attachment,
 		Content: content,
 		Ctime: time.Now(),
 		Updated: time.Now(),
@@ -170,26 +172,27 @@ func DeleteTopic(id string)  error {
 	return err
 }
 
-func ModifyTopic(id,title, content, category, label string) error  {
+func ModifyTopic(id,title, content, category, label, attachment string) error  {
 	realId, err := strconv.ParseInt(id, 10, 64);
 	if err != nil {
 		return err
 	}
 
 	realLabel := "$" + strings.Join(strings.Split(label, " "), "#$") + "#"
-	fmt.Println("ModifyTopic:",realLabel)
 
 	o := orm.NewOrm()
 
-	 var oldcate string
+	 var oldcate, oldattachment string
 	//使用Read函数时，传入的的参数必须含有主键值，如Topic的Id。查找成功，没有错误返回则进行下一步处理
 	topic := &Topic{Id: realId}
 	if o.Read(topic) == nil {
 		oldcate = topic.Category    //获取原来的分类
+		oldattachment = topic.Attachment //获取原来的文件路径
 		topic.Title = title
 		topic.Label = realLabel
 		topic.Content = content
 		topic.Category = category
+		topic.Attachment = attachment
 		topic.Updated = time.Now()
 		_, err = o.Update(topic)
 		if err != nil {
@@ -216,6 +219,13 @@ func ModifyTopic(id,title, content, category, label string) error  {
 				cate.TopicCount++
 				_, err = o.Update(cate)
 			}
+		}
+	}
+
+	beego.Info("ModifyTopic: 现在的附件：", attachment, "原附件： ",oldattachment)
+	if !strings.EqualFold(attachment, oldattachment) {  //如果前后存储文件不一致，需要把原来的文件删除
+		if len(oldattachment) > 0 {
+			err = os.Remove(path.Join("attachment", oldattachment))
 		}
 	}
 
