@@ -10,9 +10,13 @@
 {{template "navbar" .}}
 
     <div class="container " >
+        {{$labels := .Labels}}
         {{with .Topic}}
         <div class="page-header">
             <h1>{{.Title}}</h1>
+            {{range $labels}}
+                 <a href="/?label={{.}}">{{.}}</a>
+            {{end}}
             <h6 class="text-muted">
                 最后修改时间{{.Updated}},访问量{{.Views}},评论数{{.ReplyCount}},最新回复{{.ReplyTime}}
             </h6>

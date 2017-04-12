@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"fmt"
+	"strings"
 )
 
 const (
@@ -32,6 +33,7 @@ type Topic struct {
 	Uid int64
 	Title string
 	Category string
+	Label string
 	Content string 		`orm:"size(5000)"`
 	Attachment string
 	Ctime time.Time	`orm:"index"`
@@ -122,12 +124,16 @@ func GetCategories() ([]*Category, error) {
 
 
 /*添加文章*/
-func AddTopic(title, content, category string)  error {
+func AddTopic(title, content, category, label string)  error {
+	//标签处理，便于查找，如‘network game’处理后变成‘$network#$game#’
+	realLabel := "$" + strings.Join(strings.Split(label, " "), "#$") + "#"
+
 	o := orm.NewOrm()
 
 	topic := &Topic{
 		Title: title,
 		Category: category,
+		Label: realLabel,
 		Content: content,
 		Ctime: time.Now(),
 		Updated: time.Now(),
@@ -144,7 +150,7 @@ func AddTopic(title, content, category string)  error {
 	err = result.Filter("title", category).One(cate)
 	if err == nil {
 		cate.TopicCount++
-		o.Update(cate)
+		_,err = o.Update(cate)
 	}
 
 	return err
@@ -164,28 +170,59 @@ func DeleteTopic(id string)  error {
 	return err
 }
 
-func ModifyTopic(id,title, content, category string) error  {
+func ModifyTopic(id,title, content, category, label string) error  {
 	realId, err := strconv.ParseInt(id, 10, 64);
 	if err != nil {
 		return err
 	}
 
+	realLabel := "$" + strings.Join(strings.Split(label, " "), "#$") + "#"
+	fmt.Println("ModifyTopic:",realLabel)
+
 	o := orm.NewOrm()
 
+	 var oldcate string
 	//使用Read函数时，传入的的参数必须含有主键值，如Topic的Id。查找成功，没有错误返回则进行下一步处理
 	topic := &Topic{Id: realId}
 	if o.Read(topic) == nil {
+		oldcate = topic.Category    //获取原来的分类
 		topic.Title = title
+		topic.Label = realLabel
 		topic.Content = content
 		topic.Category = category
 		topic.Updated = time.Now()
-		o.Update(topic)
+		_, err = o.Update(topic)
+		if err != nil {
+			return err
+		}
 	}
 
-	return nil
+	if !strings.EqualFold(category, oldcate) {   //分类有发生变动时才更新分类
+		if len(oldcate) > 0 {
+			result := o.QueryTable("category")   //更新旧的文章分类
+			cate := new(Category)
+			err = result.Filter("title", oldcate).One(cate)
+			if err == nil {
+				cate.TopicCount--
+				_, err = o.Update(cate)
+			}
+		}
+
+		if len(category)>0{
+			result := o.QueryTable("category")   //更新新的文章分类
+			cate := new(Category)
+			err = result.Filter("title", category).One(cate)
+			if err == nil {
+				cate.TopicCount++
+				_, err = o.Update(cate)
+			}
+		}
+	}
+
+	return err
 }
 
-func GetAllTopics(category string, desc bool) ([]*Topic, error)  {
+func GetAllTopics(category, label string, desc bool) ([]*Topic, error)  {
 	topics :=make([]*Topic, 0)
 	o := orm.NewOrm()
 
@@ -195,6 +232,11 @@ func GetAllTopics(category string, desc bool) ([]*Topic, error)  {
 		if len(category) > 0{   //按分类筛选
 			result = result.Filter("category", category)
 		}
+
+		if len(label)>0 {  //按标签进行精确查找
+			result = result.Filter("label__contains","$"+label+"#")
+		}
+
 		_, err = result.OrderBy("-updated").All(&topics)
 	}else {
 		_, err = result.All(&topics)
@@ -220,6 +262,9 @@ func GetTopic(id string) (*Topic, error) {
 
 	topic.Views++    //更新文章访问量
 	_, err = o.Update(topic)
+
+	//把处理过的标签语句还原
+	topic.Label = strings.Replace(strings.Replace(topic.Label, "#", " ", -1), "$", "",-1)
 
 	return topic, err
 }

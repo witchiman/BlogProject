@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"myblog/models"
 	"fmt"
+	"strings"
 )
 
 type TopicController struct {
@@ -15,7 +16,7 @@ func (c *TopicController) Get()  {
 	c.TplName = "topic.html"
 	c.Data["IsLogin"] = checkLogin(c.Ctx)
 
-	topics, err := models.GetAllTopics("", false)
+	topics, err := models.GetAllTopics("", "", false)
 	if err != nil {
 		beego.Error(err)
 	}
@@ -27,14 +28,14 @@ func (c *TopicController) Post()  {
 	content := c.Input().Get("content")
 	category := c.Input().Get("category")
 	topicId := c.Input().Get("topicId")
-	fmt.Println("topicId", topicId)
+	label := c.Input().Get("label")
 
 	var err error
 	if len(topicId)!=0 {  //如是参数里含有文章id，说明操作是修改文章
-		err = models.ModifyTopic(topicId, title, content, category)
+		err = models.ModifyTopic(topicId, title, content, category, label)
 		c.Redirect("/topic", 302)
 	}else {
-		err = models.AddTopic(title, content, category)
+		err = models.AddTopic(title, content, category, label)
 		c.Redirect("/topic", 302)
 
 	}
@@ -103,7 +104,7 @@ func (c *TopicController) View()  {
 		return
 	}
 	c.Data["Topic"] = topic
-
+	c.Data["Labels"] = strings.Split(topic.Label, " ")
 	replies, err := models.GetAllReplies(topicId)
 	if err != nil {
 		beego.Error(err)

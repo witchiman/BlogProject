@@ -14,7 +14,8 @@ func (c *HomeController) Get() {
 	c.Data["IsHome"] = true
 
 	category := c.Input().Get("category")
-	topics,err := models.GetAllTopics(category, true)
+	label := c.Input().Get("label")
+	topics,err := models.GetAllTopics(category, label, true)
 	if err!=nil {
 		beego.Error(err)
 	}
@@ -24,8 +25,8 @@ func (c *HomeController) Get() {
 	if err != nil {
 		beego.Error(err)
 	}
-	c.Data["Categories"] = categories
 
+	c.Data["Categories"] = categories
 	c.Data["IsLogin"] = checkLogin(c.Ctx)
 
 }
