@@ -55,8 +55,7 @@ func  checkLogin(ctx *context.Context) bool {
 	password := cookie.Value
 
 	result := (name==beego.AppConfig.String("adminName"))&&
-		(password==beego.AppConfig.String("adminPassword"))
-	fmt.Println("The check result is ", result)
+		(password==beego.AppConfig.String("adminPassword")) 
 
 	return result
 }

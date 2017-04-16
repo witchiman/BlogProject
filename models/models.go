@@ -3,9 +3,8 @@ package models
 import (
 	"time"
 
-	"github.com/Unknwon/com"
 	"github.com/astaxie/beego/orm"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 	"path"
 	"os"
 	"strconv"
@@ -15,8 +14,7 @@ import (
 )
 
 const (
-	_DB_NAME = "data/blog.db"
-	_SQLITE3_DRIVER = "sqlite3"
+	_MYSQL_DRIVER = "mysql"
 )
 
 type Category struct{
@@ -55,18 +53,14 @@ type Reply struct{
 }
 
 func RegisterDB()  {
-	//检察数据库文件
-	if !com.IsExist(_DB_NAME) {
-		os.MkdirAll(path.Dir(_DB_NAME), os.ModePerm)
-		os.Create(_DB_NAME)
-	}
 
 	//注册驱动
 	orm.RegisterModel(new(Category), new(Topic), new(Reply) )
-	// 注册驱动（“sqlite3” 属于默认注册，此处代码可省略）
-	orm.RegisterDriver(_DB_NAME, orm.DRSqlite)
+	// 注册驱动,属于默认注册，此处代码可省略）
+	orm.RegisterDriver(_MYSQL_DRIVER, orm.DRMySQL)
 	//注册默认数据库
-	orm.RegisterDataBase("default", _SQLITE3_DRIVER, _DB_NAME, 10)
+	// 最后两个参数分别为最大空闲连接和最大数据库连接
+	orm.RegisterDataBase("default", _MYSQL_DRIVER, "test:1234@tcp(localhost:3306)/testDB?charset=utf8", 10,10)
 }
 
 
